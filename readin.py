@@ -11,7 +11,6 @@ with open(source, 'rb') as f:
 		vals = [float(row[0]), float(row[1])]
 		datalist.append(vals)
 
-global data
 data = np.array(datalist)
 
 def run():

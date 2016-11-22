@@ -3,6 +3,12 @@ import math
 import matplotlib.pyplot as plt
 import readin as r
 import minimise as m
+import matplotlib.cm as cm
+import matplotlib.colors as colors
+import matplotlib.mlab as mlab
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import cm
 
 data = r.run()
 
@@ -19,7 +25,7 @@ def plot1d():
 	llvals =[]
 	print taurange
 	for tau in taurange:
-		llvector = m.nll(tau, data)
+		llvector = m.nll([tau], data)
 		llvals.append(llvector)
 		
 	plt.figure()
@@ -28,6 +34,52 @@ def plot1d():
 	plt.ylabel("-Log Likelihood")
 	plt.title(r"$\tau$ Optimisation")
 	plt.savefig("graphs/nll.pdf")
+	plt.close()
+	
+def plot2d():
+	times = data[:,0]
+	
+	nbins=50
+	fig = plt.figure()
+		
+	x1 = np.linspace(0.1, 3.0, nbins)
+	x2 = np.linspace(0.2, 1.0, nbins)
+	
+	xs = [x1,x2]
+	
+	y1 = np.linspace(0.01, 1.0, nbins)
+	y2 = np.linspace(0.5, 1.0, nbins)
+	
+	ys=[y1,y2]
+	
+	for i in range(2):
+		
+		plt.subplot(2,1,i+1)
+		
+		x=xs[i]
+		y=ys[i]
+		
+		grid=[]
+		for a in y:
+			llvals =[]
+			for tau in x:
+				llvector = m.nll(tau, array=data, a=a)
+				llvals.append(llvector)
+			grid.insert(0,llvals)
+		
+		cmap = cm.jet_r
+		grid = np.array(grid)
+		
+		print grid
+		
+		
+		plt.imshow(grid, aspect="auto", extent=(x[0], x[-1], y[0], y[-1]), interpolation='bilinear', cmap=cmap)	
+		plt.xlabel(r"$\tau$")
+		plt.ylabel("a")
+		plt.colorbar()
+	
+	plt.suptitle(r"$\tau$ and a Optimisation")
+	plt.savefig("graphs/nll2d.pdf")
 	plt.close()
 
 def plotNsigma(startingvals, tolerance):
